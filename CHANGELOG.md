@@ -6,7 +6,18 @@
 
 ### Improvements and bug fixes
 
+- feat: use Logger instead of IO.puts in DB check (#5050 - @swiffer)
+- feat: Increase max_header_value_length to support oauth2-proxy (#5031 - @ultravail)
+
 #### Build, CI, internal
+
+- build(deps): bump mdast-util-to-hast from 13.2.0 to 13.2.1 in /website (#5059)
+- build(deps): bump js-yaml from 3.14.1 to 3.14.2 in /website (#5043)
+- build(deps): bump crate-ci/typos from 1.39.0 to 1.40.0 (#5055)
+- build(deps): bump DeterminateSystems/update-flake-lock from 27 to 28 (#5056)
+- build(deps): bump express from 4.21.2 to 4.22.1 in /website (#5060)
+- build(deps): update flake.lock (#5027)
+- fix(website): Bump node-forge to 1.3.3 to resolve CVE-2025-12816, CVE-2025-66030 and CVE-2025-66031 (#5071 - @JakobLichterfeld)
 
 #### Dashboards
 
@@ -15,6 +26,7 @@
 #### Documentation
 
 - docs(traefik): update to v3.6 as 3.6.1 solves issues with docker 29.0 (#5034 - @JakobLichterfeld)
+- docs: fix the formatting of the `DATABASE_SOCKET_DIR` description (#5026 - @IngmarStein)
 
 ## [2.2.0] - 2025-11-06
 
