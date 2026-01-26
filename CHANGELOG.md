@@ -4,10 +4,13 @@
 
 ### New features
 
+feat: add optional dark mode feature (#5065 - @wooter)
+
 ### Improvements and bug fixes
 
 - feat: use Logger instead of IO.puts in DB check (#5050 - @swiffer)
 - feat: Increase max_header_value_length to support oauth2-proxy (#5031 - @ultravail)
+- perf: Replace positions indexes from BTREE to BRIN to reduce memory usage (#5075 - @ilya-y-synth)
 
 #### Build, CI, internal
 
@@ -18,8 +21,18 @@
 - build(deps): bump express from 4.21.2 to 4.22.1 in /website (#5060)
 - build(deps): update flake.lock (#5027)
 - fix(website): Bump node-forge to 1.3.3 to resolve CVE-2025-12816, CVE-2025-66030 and CVE-2025-66031 (#5071 - @JakobLichterfeld)
+- chore(website): bump qs to fix CVE-2025-15284 (#5091 - @JakobLichterfeld)
+- build(deps): bump react and react-dom from 19.2.0 to 19.2.3 in /website (#5084)
+- build(deps): bump nix-community/cache-nix-action from 6.1.3 to 7.0.0 (#5082)
+- build(deps): bump actions/cache from 4.3.0 to 5.0.1 (#5077)
+- build(deps): bump crate-ci/typos from 1.40.0 to 1.41.0 (#5079)
+- build(deps): bump actions/stale from 10.1.0 to 10.1.1 (#5080)
+- build(deps): bump lodash from 4.17.21 to 4.17.23 in /website (#5109)
 
 #### Dashboards
+
+- feat(overview): show battery heating on overview dashboard as well (#5090 - @kaistian)
+- feat: optimize reduced_range query and always show consumption kwh in drives dashboard (#5089 - @swiffer)
 
 #### Translations
 
@@ -27,6 +40,9 @@
 
 - docs(traefik): update to v3.6 as 3.6.1 solves issues with docker 29.0 (#5034 - @JakobLichterfeld)
 - docs: fix the formatting of the `DATABASE_SOCKET_DIR` description (#5026 - @IngmarStein)
+- docs: fix external image rendering with Traefik SSL (#5074 - @swiffer)
+- docs(home_assistant): default tesla_active_route_distance_to_arrival sensor to kilometers (#5086 - @kenni)
+- docs: Remove hints to now deprecated Grafana VS Code Extension in contribution guide (#5110 - @swiffer)
 
 ## [2.2.0] - 2025-11-06
 
