@@ -22,7 +22,9 @@ defmodule TeslaMate.Vehicles do
       timeout: 5000
     )
     |> Enum.map(fn {:ok, vehicle} -> vehicle end)
-    |> Enum.sort_by(fn %Vehicle.Summary{car: %Car{id: id}} -> id end)
+    |> Enum.sort_by(fn %Vehicle.Summary{car: %Car{id: id, display_priority: dp}} ->
+      {dp, id}
+    end)
   end
 
   def kill do
@@ -110,7 +112,7 @@ defmodule TeslaMate.Vehicles do
   def create_or_update!(%TeslaApi.Vehicle{} = vehicle) do
     unless is_nil(name = vehicle.display_name), do: Logger.info("Starting logger for '#{name}'")
 
-    {:ok, car} =
+    {:ok, %Car{} = car} =
       with nil <- Log.get_car_by(vin: vehicle.vin),
            nil <- Log.get_car_by(vid: vehicle.vehicle_id),
            nil <- Log.get_car_by(eid: vehicle.id) do
