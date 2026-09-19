@@ -2,17 +2,90 @@
 
 ## [unreleased]
 
+Under the hood, this release adds a self-verifying black-box characterization suite: recorded API sequences replay through the real vehicle state machine, and everything that leaves the system — database rows, MQTT messages, and the vehicle's interactions with the streaming API and its supervisor — is compared against known-good results with 93.9 % coverage.
+It is the basis for the upcoming rework of the state machine and the Rust rewrite, and writing it already uncovered three bugs, all fixed in this release (#5656, #5684, #5693). Five more findings (#5699, #5714, #5716, #5718, #5742) sit in code the rework replaces, so they are fixed there instead of patched twice.
+The geo-fence links in the Grafana dashboards now open in the same tab, so the Back button returns to the dashboard and the Grafana URL is detected automatically again (#5709).
+
+**Note for Home Assistant MQTT discovery users:** TeslaMate no longer re-runs the discovery migration on every restart, which briefly removed and recreated entities (#5667). Instead it clears the former per-entity topics and republishes the device config; Home Assistant logs one harmless "conflicting MQTT discovery message" warning per legacy topic after each restart, entities are untouched.
+Upgrading directly from 4.1.x no longer preserves entity registry customizations — see the [docs](https://docs.teslamate.org/docs/integrations/home_assistant#mqtt-discovery-automatic-configuration) (#5685).
+
 ### New features
+
+- feat(webview): make the vehicle display order editable on the settings page (#5741 - @wooter)
 
 ### Improvements and bug fixes
 
+- fix(vehicle): cancel an update with the logged update row instead of the API payload, which crashed the vehicle process and left the update open forever (#5664 - @JakobLichterfeld)
+- fix(web): remove stray brace from the direction arrow SVG path, which made Safari log a parse error on every position update (#5665 - @JakobLichterfeld)
+- refactor(vehicle): route the vehicle's view of time through a clock seam (#5688 - @JakobLichterfeld)
+- refactor(vehicle): date timestamp-less state rows through the clock seam (#5689 - @JakobLichterfeld)
+- fix(vehicle): keep logging when the car reports an outdated timestamp after being offline or asleep — previously the vehicle process crashed on every poll and the state stayed stuck (#5692 - @JakobLichterfeld)
+- feat: use Grafana 13.2.1 (#5694 - @swiffer)
+- fix(mqtt): stop re-running the Home Assistant discovery migration on every restart (#5685 - @nebhale)
+- fix(vehicle): keep the published state start time from jumping backwards after charging, updating or driving (#5706 - @JakobLichterfeld)
+- fix(web): pin the size of Leaflet's SVG overlay so the vehicle arrow and geofence circle stay on the map at any Safari page zoom (#5666 - @JakobLichterfeld)
+- fix(grafana): open the TeslaMate header link in a new tab so it works when Grafana and TeslaMate share an origin (#5626 - @misenhower)
+- fix(web): make the Back button return to the Grafana dashboard and detect the Grafana URL despite origin-only referrers (#5709 - @JakobLichterfeld)
+- refactor(vehicle): simplify the state machine: plain atom states, DB records moved into the state data (#5259 - @brianmay, @JakobLichterfeld)
+
 #### Build, CI, internal
+
+- test: add characterization harness replaying API fixtures against persisted rows and MQTT (#5653 - @JakobLichterfeld)
+- test(characterization): convert driving scenarios to characterization fixtures (#5654 - @JakobLichterfeld)
+- test(characterization): convert charging scenarios to characterization fixtures (#5655 - @JakobLichterfeld)
+- test(characterization): convert updating scenarios to characterization fixtures. Pins the update-cancel crash (#5656) that mock-based tests could not see (#5658 - @JakobLichterfeld)
+- test(characterization): convert streaming scenarios to characterization fixtures (#5668 - @JakobLichterfeld)
+- fix(test): give the error_event selftest a settled terminal cycle (#5670 - @JakobLichterfeld)
+- fix(test): move the offline-resume scenario off the 15-minute boundary (#5681 - @JakobLichterfeld)
+- test(characterization): enforce the two-call-terminal limit (#5683 - @JakobLichterfeld)
+- test(characterization): convert suspend_logging scenarios to characterization fixtures (#5687 - @JakobLichterfeld)
+- test(characterization): run replays on a scenario clock, retire timebase (#5690 - @JakobLichterfeld)
+- test(characterization): pin the stale-timestamp resume crash (#5691 - @JakobLichterfeld)
+- test(characterization): convert suspend scenarios to characterization fixtures (#5695 - @JakobLichterfeld)
+- test(characterization): convert summary scenarios to characterization fixtures (#5696 - @JakobLichterfeld)
+- test(characterization): convert vehicle scenarios to characterization fixtures, add the update_car_settings call (#5697 - @JakobLichterfeld)
+- test(characterization): convert the remaining vehicle scenarios — resume_logging and summary calls, expect_halt, seed positions, Vehicles stand-in (#5698 - @JakobLichterfeld)
+- test(characterization): pin charge samples without charger_power (#5700 - @JakobLichterfeld)
+- test(characterization): pin stream connect/disconnect and the supervisor kill as golden interactions (#5704 - @JakobLichterfeld)
+- test(characterization): name the scenario event behind a mismatch on a dated row (#5705 - @JakobLichterfeld)
+- build(deps): bump browserslist from 4.28.2 to 4.28.9 in /website (#5707)
+- build(deps): bump fast-uri from 3.1.5 to 3.1.7 in /website (#5686)
+- build(deps): bump http-proxy-middleware from 2.0.9 to 2.0.10 in /website (#5708)
+- build(deps): update flake.lock (#5659)
+- build(deps): bump the actions-deps group across 4 directories with 8 updates (#5679)
+- build(deps): bump phoenix from 1.8.9 to 1.8.13 (#5672)
+- build(deps): bump postgrex from 0.22.3 to 0.22.4 (#5673)
+- build(deps-dev): bump sass from 1.102.0 to 1.103.1 in /assets (#5674)
+- build(deps-dev): bump esbuild from 0.28.1 to 0.28.2 in /assets (#5675)
+- build(deps): bump castore from 1.0.20 to 1.0.21 (#5676)
+- build(deps): bump srtm from 0.8.0 to 0.9.0 (#5677)
+- build(deps): bump phoenix_live_view from 1.2.8 to 1.2.11 (#5678)
+- test(characterization): pin the pre-online check of the streaming API (#5712 - @JakobLichterfeld)
+- test(characterization): pin the suspended state's resume, usage and inactive-stream paths (#5713 - @JakobLichterfeld)
+- test(characterization): pin vehicle identification — model, trim and marketing name from vehicle_config and VIN (#5715 - @JakobLichterfeld)
+- test(characterization): pin payload edge cases — charge defaults of the offline charge inference and stream frames against a merged or timestamp-less last response (#5717 - @JakobLichterfeld)
+- test(characterization): pin the power-usage suspend guard and service mode across an idle suspend (#5719 - @JakobLichterfeld)
+- test(characterization): pin generic API errors while driving, charging and on the manual suspend fetch, the asleep/offline transitions and the polling doubling after resume_logging (#5723 - @JakobLichterfeld)
+- build(deps): bump @swc/html from 1.15.46 to 1.16.2 in /website (#5720)
+- build(deps): bump colord from 2.9.3 to 2.10.0 in /website (#5721)
+- build(deps): bump js-yaml from 4.3.1 to 4.3.2 in /website (#5724)
+- build(deps): bump svgo from 3.3.4 to 3.3.5 in /website (#5725)
+- build(deps): bump joi from 17.13.4 to 17.13.7 in /website (#5726)
+- test(characterization): pin settings toggles during charging and while parked; the harness call seam serves stream connect and disconnect (#5727 - @JakobLichterfeld)
+- test(characterization): pin a charge inside a geofence — geofence_id, per-kWh cost and the geofence topic (#5736 - @JakobLichterfeld)
+- test(characterization): pin a drive in import mode — no address lookup, halt on import_complete (#5737 - @JakobLichterfeld)
+- test(characterization): add the too_many_request error form, seed.updates and per-scenario Home Assistant discovery to the harness, with first users (#5740 - @JakobLichterfeld)
+- test(characterization): pin the reconnecting stream controls and the missing stream after a service visit (#5743 - @JakobLichterfeld)
+- test(vehicle): make the store-position interval configurable and lock the state-machine field lifecycle with regression tests (#5259 - @JakobLichterfeld)
+- refactor: move the Elixir application to `elixir/`, so the repository root is prepared for the Rust core next to it; tooling, CI and docs point at the new path (#5745 - @JakobLichterfeld)
 
 #### Dashboards
 
 #### Translations
 
 #### Documentation
+
+- docs: add AI-assisted contribution policy and Grafana dashboard notes (#5578 - @swiffer)
 
 ## [4.2.0] - 2026-08-23
 

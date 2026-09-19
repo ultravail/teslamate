@@ -30,6 +30,7 @@
     {
       "icon": "dashboard",
       "tags": [],
+      "targetBlank": true,
       "title": "TeslaMate",
       "tooltip": "",
       "type": "link",
@@ -168,7 +169,7 @@
           "zoom": 15
         }
       },
-      "pluginVersion": "13.1.1",
+      "pluginVersion": "13.2.1",
       "targets": [
         {
           "datasource": {
@@ -286,7 +287,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "13.1.1",
+      "pluginVersion": "13.2.1",
       "targets": [
         {
           "datasource": {
@@ -428,7 +429,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "13.1.1",
+      "pluginVersion": "13.2.1",
       "targets": [
         {
           "datasource": {
@@ -584,7 +585,7 @@
         "textMode": "value_and_name",
         "wideLayout": true
       },
-      "pluginVersion": "13.1.1",
+      "pluginVersion": "13.2.1",
       "targets": [
         {
           "datasource": {
@@ -701,7 +702,7 @@
         "textMode": "value_and_name",
         "wideLayout": true
       },
-      "pluginVersion": "13.1.1",
+      "pluginVersion": "13.2.1",
       "targets": [
         {
           "datasource": {
@@ -820,7 +821,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "13.1.1",
+      "pluginVersion": "13.2.1",
       "targets": [
         {
           "datasource": {
@@ -938,7 +939,7 @@
         "textMode": "value_and_name",
         "wideLayout": true
       },
-      "pluginVersion": "13.1.1",
+      "pluginVersion": "13.2.1",
       "targets": [
         {
           "datasource": {
@@ -1047,7 +1048,7 @@
         "textMode": "value_and_name",
         "wideLayout": true
       },
-      "pluginVersion": "13.1.1",
+      "pluginVersion": "13.2.1",
       "targets": [
         {
           "datasource": {
@@ -1142,7 +1143,7 @@
         "textMode": "value_and_name",
         "wideLayout": true
       },
-      "pluginVersion": "13.1.1",
+      "pluginVersion": "13.2.1",
       "targets": [
         {
           "datasource": {
@@ -1289,7 +1290,7 @@
         "sizing": "auto",
         "valueMode": "color"
       },
-      "pluginVersion": "13.1.1",
+      "pluginVersion": "13.2.1",
       "targets": [
         {
           "datasource": {
@@ -1449,7 +1450,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "13.1.1",
+      "pluginVersion": "13.2.1",
       "targets": [
         {
           "datasource": {
@@ -1638,7 +1639,7 @@
                 "id": "links",
                 "value": [
                   {
-                    "targetBlank": true,
+                    "targetBlank": false,
                     "title": "Create or edit geo-fence",
                     "url": "${base_url:raw}/geo-fences/${__data.fields.start_path}"
                   }
@@ -1664,7 +1665,7 @@
                 "id": "links",
                 "value": [
                   {
-                    "targetBlank": true,
+                    "targetBlank": false,
                     "title": "Create or edit geo-fence",
                     "url": "${base_url:raw}/geo-fences/${__data.fields.end_path}"
                   }
@@ -1824,7 +1825,7 @@
           }
         ]
       },
-      "pluginVersion": "13.1.1",
+      "pluginVersion": "13.2.1",
       "targets": [
         {
           "datasource": {
@@ -2091,7 +2092,7 @@
                 "id": "links",
                 "value": [
                   {
-                    "targetBlank": true,
+                    "targetBlank": false,
                     "title": "Create or edit geo-fence",
                     "url": "${base_url:raw}/geo-fences/${__data.fields.path}"
                   }
@@ -2264,7 +2265,7 @@
           }
         ]
       },
-      "pluginVersion": "13.1.1",
+      "pluginVersion": "13.2.1",
       "targets": [
         {
           "datasource": {
@@ -2464,7 +2465,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "13.1.1",
+      "pluginVersion": "13.2.1",
       "targets": [
         {
           "datasource": {
@@ -2634,7 +2635,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "13.1.1",
+      "pluginVersion": "13.2.1",
       "targets": [
         {
           "datasource": {

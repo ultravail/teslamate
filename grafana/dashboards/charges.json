@@ -22,6 +22,7 @@
     {
       "icon": "dashboard",
       "tags": [],
+      "targetBlank": true,
       "title": "TeslaMate",
       "tooltip": "",
       "type": "link",
@@ -123,7 +124,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "13.1.1",
+      "pluginVersion": "13.2.1",
       "targets": [
         {
           "datasource": {
@@ -221,7 +222,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "13.1.1",
+      "pluginVersion": "13.2.1",
       "targets": [
         {
           "datasource": {
@@ -320,7 +321,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "13.1.1",
+      "pluginVersion": "13.2.1",
       "targets": [
         {
           "datasource": {
@@ -419,7 +420,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "13.1.1",
+      "pluginVersion": "13.2.1",
       "targets": [
         {
           "datasource": {
@@ -729,7 +730,7 @@
                 "id": "links",
                 "value": [
                   {
-                    "targetBlank": true,
+                    "targetBlank": false,
                     "title": "Create or edit geo-fence",
                     "url": "${base_url:raw}/geo-fences/${__data.fields.path}"
                   }
@@ -1164,7 +1165,7 @@
         "showHeader": true,
         "sortBy": []
       },
-      "pluginVersion": "13.1.1",
+      "pluginVersion": "13.2.1",
       "targets": [
         {
           "datasource": {
@@ -1228,7 +1229,7 @@
         "content": "From here you can check if you have \nincomplete data of **Charges** (charges without ending date)\nIf so, you may follow the official \nguide by <a href='https://docs.teslamate.org/docs/maintenance/manually_fixing_data' target='_blank'>Manually fixing data</a>",
         "mode": "markdown"
       },
-      "pluginVersion": "13.1.1",
+      "pluginVersion": "13.2.1",
       "type": "text"
     },
     {
@@ -1277,7 +1278,7 @@
         "enablePagination": true,
         "showHeader": true
       },
-      "pluginVersion": "13.1.1",
+      "pluginVersion": "13.2.1",
       "targets": [
         {
           "datasource": {

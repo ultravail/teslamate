@@ -22,6 +22,7 @@
     {
       "icon": "dashboard",
       "tags": [],
+      "targetBlank": true,
       "title": "TeslaMate",
       "type": "link",
       "url": "${base_url:raw}"
@@ -666,7 +667,7 @@
           }
         ]
       },
-      "pluginVersion": "13.1.1",
+      "pluginVersion": "13.2.1",
       "targets": [
         {
           "datasource": {
