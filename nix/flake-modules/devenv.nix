@@ -51,6 +51,13 @@
             mosquitto_sub
             config.treefmt.build.wrapper
             pkgs.osv-scanner
+            pkgs.reuse # `reuse lint`, same version as the `.#check-reuse` CI check
+            pkgs.cargo
+            pkgs.clippy
+            pkgs.lldb # debugger for rust-lldb and the editors' lldb-dap
+            pkgs.rust-analyzer
+            pkgs.rustc # rust-analyzer needs rustc on PATH to find the sysroot
+            pkgs.rustfmt
           ]
           ++ builtins.attrValues config.treefmt.build.programs
           ++ optionals stdenv.isLinux [

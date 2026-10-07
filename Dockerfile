@@ -1,4 +1,4 @@
-FROM elixir:1.20.2-otp-29 AS builder
+FROM elixir:1.20.3-otp-29 AS builder
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -40,10 +40,15 @@ COPY elixir/priv/repo/migrations priv/repo/migrations
 COPY elixir/priv/gettext priv/gettext
 COPY grafana/dashboards ../grafana/dashboards
 COPY VERSION ../VERSION
+COPY NOTICE LICENSE ../
 RUN mix compile
 
 COPY elixir/config/runtime.exs config/runtime.exs
 RUN mix release --path /opt/built
+
+# Read-only here: --chmod on the final COPY would also apply to the directory
+# it creates and lock out the runtime user.
+COPY --chmod=444 NOTICE LICENSE /opt/legal/
 
 ########################################################################
 
@@ -56,11 +61,11 @@ ENV LANG=C.UTF-8 \
 WORKDIR $HOME
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
+        ca-certificates \
         libodbc2 \
         libsctp1 \
         libssl3t64 \
         libstdc++6 \
-        netcat-openbsd \
         tini \
         tzdata \
     && apt-get clean \
@@ -68,6 +73,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && groupadd --gid 10001 --system nonroot \
     && useradd  --uid 10000 --system --gid nonroot --home-dir /home/nonroot --shell /sbin/nologin nonroot \
     && chown -R nonroot:nonroot .
+
+COPY --from=builder /opt/legal/ /usr/share/doc/teslamate/
 
 USER nonroot:nonroot
 COPY --chown=nonroot:nonroot --chmod=555 entrypoint.sh /

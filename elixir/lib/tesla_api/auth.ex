@@ -2,13 +2,10 @@ defmodule TeslaApi.Auth do
   alias TeslaApi.Error
 
   @web_client_id "ownerapi"
-  @redirect_uri "https://auth.tesla.com/void/callback"
 
   def web_client_id, do: @web_client_id
-  def redirect_uri, do: @redirect_uri
 
   @default_headers [
-    {"user-agent", "TeslaMate/#{Mix.Project.config()[:version]}"},
     {"Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"},
     {"Accept-Language", "en-US,de-DE;q=0.5"}
   ]
@@ -16,12 +13,15 @@ defmodule TeslaApi.Auth do
   def client do
     Tesla.client(
       [
-        {TeslaApi.Middleware.FollowRedirects, except: [@redirect_uri]},
         {Tesla.Middleware.BaseUrl, System.get_env("TESLA_AUTH_HOST", "https://auth.tesla.com")},
-        {Tesla.Middleware.Headers, @default_headers},
+        {Tesla.Middleware.Headers,
+         [{"user-agent", "TeslaMate/#{TeslaMate.Version.version()}"} | @default_headers]},
         Tesla.Middleware.JSON,
         TeslaApi.Middleware.FleetAuth,
-        {Tesla.Middleware.Logger, debug: true, level: &log_level/1}
+        # No request and response details, not even on the debug level: the
+        # request carries the refresh token, the response the new tokens.
+        {Tesla.Middleware.Logger,
+         debug: false, format: &TeslaApi.format_log/3, level: &log_level/1}
       ],
       {Tesla.Adapter.Finch, name: TeslaMate.HTTP, receive_timeout: 60_000}
     )
@@ -101,7 +101,7 @@ defmodule TeslaApi.Auth do
     end
   end
 
-  defp log_level({:ok, %Tesla.Env{} = env}) when env.status >= 400, do: :error
+  defp log_level({:ok, %Tesla.Env{} = env}) when env.status >= 300, do: :error
   defp log_level({:ok, %Tesla.Env{}}), do: :info
   defp log_level({:error, _reason}), do: :error
 end

@@ -2,16 +2,71 @@
 
 ## [unreleased]
 
+### New features
+
+### Improvements and bug fixes
+
+- feat: use Grafana 13.2.3 (#5803 - @swiffer)
+- fix(docker): install the CA certificates, so Tzdata can verify TLS and download time zone updates (#5808 - @JakobLichterfeld)
+- fix: use the position's latitude when re-assigning drives and charges to geofences (#5820 - @JakobLichterfeld)
+- fix: re-assign drives and charges only when a geofence's location or radius changes (#5823 - @JakobLichterfeld)
+- perf(web): connect to the map tile server early, so maps appear sooner (#5826 - @JakobLichterfeld)
+- fix(web): label cars without a name by their VIN in the settings, like the car summary (#5821 - @TUNER88)
+- fix(web): label cars without a name by their VIN on the charge cost page and in the vehicle reload hint, like the car summary (#5827 - @JakobLichterfeld)
+
+#### Build, CI, internal
+
+- fix: read TeslaMate's version from one module so a VERSION bump cannot leave a stale copy (#5804 - @swiffer, @JakobLichterfeld)
+- build(deps): update flake.lock (#5822)
+- build(deps): bump localize from 1.2.0 to 1.3.0 in /elixir (#5811)
+- build(deps-dev): bump sass from 1.104.1 to 1.105.0 in /elixir/assets (#5812)
+- build(deps): bump @geoman-io/leaflet-geoman-free from 2.20.1 to 2.20.2 in /elixir/assets (#5813)
+- build(deps): bump phoenix from 1.8.14 to 1.8.15 in /elixir (#5814)
+- build(deps): bump tzdata from 1.2.1 to 1.2.2 in /elixir (#5815)
+- build(deps-dev): bump lazy_html from 0.1.12 to 0.1.13 in /elixir (#5816)
+- build(deps): bump crate-ci/typos from 1.50.2 to 1.50.3 in the actions-deps group across 1 directory (#5817)
+- build(deps): bump fast-uri from 3.1.7 to 3.1.8 in /website (#5824)
+- build(deps): bump brace-expansion from 1.1.18 to 1.1.21 in /website (#5825)
+- build(nix): add rustc and lldb to the devenv shell, so rust-analyzer finds the sysroot in every editor and Rust can be debugged (#5796 - @brianmay)
+- ci: run the Rust CI and the Nix hash check whenever one of their build inputs changes, not only rust/ and the mix files (#5828 - @JakobLichterfeld)
+- fix(nix): build with Erlang without wx and fetch the mix deps with the project's Elixir, which shrinks every Nix build by about 0.5 GiB (#5830 - @JakobLichterfeld)
+- ci: run the NixOS module test (#5829 - @JakobLichterfeld)
+- fix(ci): keep the flake.lock and Nix hash workflows out of the other jobs' caches (#5831 - @JakobLichterfeld)
+- feat(rust): add OpenTelemetry support, exporting logs, traces and metrics over OTLP ([aa563418](https://github.com/teslamate-org/teslamate/commit/aa5634188b369e4ca6402b4811c7c8a48bd658d7) - @brianmay)
+- refactor(rust): prefix the OTLP command line options with `otlp-` ([428eb491](https://github.com/teslamate-org/teslamate/commit/428eb491eea01852dbc5f9d45f08f2c05ccbe17f) - @brianmay)
+- fix(rust): make the OTLP configuration values optional ([a22cbcba](https://github.com/teslamate-org/teslamate/commit/a22cbcba9d7d53b297533e2f001997d0634b5ba7) - @brianmay)
+- refactor(rust): require endpoint, username and password as soon as one OTLP value is set ([bbc95ce1](https://github.com/teslamate-org/teslamate/commit/bbc95ce1f95da17f937fda65c60d1c0860db6df0) - @brianmay)
+- style(rust): fix the formatting ([057270c1](https://github.com/teslamate-org/teslamate/commit/057270c1938e0714164b77004ecb6e349436915a) - @brianmay)
+- build(deps): bump the opentelemetry-rust group across 1 directory with 6 updates (#5833)
+- refactor(rust): configure the OTLP export only through the standard OpenTelemetry environment variables, export each signal only when its endpoint is set, and drop the unused dependencies (#5835 - @JakobLichterfeld)
+
+#### Dashboards
+
+#### Translations
+
+#### Documentation
+
+## [4.3.0] - 2026-09-29
+
+The vehicle display order can now be edited on the settings page, a new dashboard shows historical temperatures, and we use the latest Grafana (13.2.2).
+When a car is assigned to the Tesla account while TeslaMate is running, you no longer need to restart TeslaMate: a reload button starts logging the car.
+The geo-fence links in the Grafana dashboards now open in the same tab, so the Back button returns to the dashboard and the Grafana URL is detected automatically again.
+
 Under the hood, this release adds a self-verifying black-box characterization suite: recorded API sequences replay through the real vehicle state machine, and everything that leaves the system — database rows, MQTT messages, and the vehicle's interactions with the streaming API and its supervisor — is compared against known-good results with 93.9 % coverage.
 It is the basis for the upcoming rework of the state machine and the Rust rewrite, and writing it already uncovered three bugs, all fixed in this release (#5656, #5684, #5693). Five more findings (#5699, #5714, #5716, #5718, #5742) sit in code the rework replaces, so they are fixed there instead of patched twice.
-The geo-fence links in the Grafana dashboards now open in the same tab, so the Back button returns to the dashboard and the Grafana URL is detected automatically again (#5709).
 
-**Note for Home Assistant MQTT discovery users:** TeslaMate no longer re-runs the discovery migration on every restart, which briefly removed and recreated entities (#5667). Instead it clears the former per-entity topics and republishes the device config; Home Assistant logs one harmless "conflicting MQTT discovery message" warning per legacy topic after each restart, entities are untouched.
-Upgrading directly from 4.1.x no longer preserves entity registry customizations — see the [docs](https://docs.teslamate.org/docs/integrations/home_assistant#mqtt-discovery-automatic-configuration) (#5685).
+**Note for Home Assistant MQTT discovery users:** TeslaMate no longer re-runs the discovery migration on every restart, which briefly removed and recreated entities. Instead it clears the former per-entity topics and republishes the device config; Home Assistant logs one harmless "conflicting MQTT discovery message" warning per legacy topic after each restart, entities are untouched.
+Upgrading directly from 4.1.x no longer preserves entity registry customizations — see the [docs](https://docs.teslamate.org/docs/integrations/home_assistant#mqtt-discovery-automatic-configuration).
+
+To make your TeslaMate experience even better, we have made 120 improvements.
+
+Enjoy!
 
 ### New features
 
 - feat(webview): make the vehicle display order editable on the settings page (#5741 - @wooter)
+- feat(web): explain why no vehicle is logged and offer a reload button that starts loggers for vehicles added to the Tesla account, instead of requiring a restart (#5710 - @JakobLichterfeld)
+- feat(web): show the copyright, license and no-warranty notice in the footer, with the NOTICE and LICENSE of the running version (#5779 - @JakobLichterfeld)
 
 ### Improvements and bug fixes
 
@@ -27,6 +82,21 @@ Upgrading directly from 4.1.x no longer preserves entity registry customizations
 - fix(grafana): open the TeslaMate header link in a new tab so it works when Grafana and TeslaMate share an origin (#5626 - @misenhower)
 - fix(web): make the Back button return to the Grafana dashboard and detect the Grafana URL despite origin-only referrers (#5709 - @JakobLichterfeld)
 - refactor(vehicle): simplify the state machine: plain atom states, DB records moved into the state data (#5259 - @brianmay, @JakobLichterfeld)
+- feat: use Grafana 13.2.2 (#5744 - @swiffer)
+- fix(web): send the referrer and show the OpenStreetMap attribution on map tiles, so tiles load behind reverse proxies that set a stricter referrer policy such as same-origin or no-referrer and TeslaMate complies with the OSM tile usage policy (#5765 - @JakobLichterfeld)
+- fix(web): show VIN and trim tooltips below the car title on mobile, so they no longer get cut off at the left edge (#5774 - @JakobLichterfeld)
+- legal: add NOTICE and state AGPL-3.0-or-later consistently (#5777 - @JakobLichterfeld)
+- legal: rewrite the trademark policy with definitions and an exhaustive list of permitted uses (#5777 - @JakobLichterfeld)
+- fix(auth): no longer follow redirects when refreshing the token, so the refresh token and the fleet token are never sent to another host (#5781 - @JakobLichterfeld)
+- fix(auth): tell rejected tokens apart from every other refresh failure, so the sign-in page names the actual cause (#5781 - @JakobLichterfeld)
+- fix(web): report a sign-in that exits instead of crashing the sign-in page (#5781 - @JakobLichterfeld)
+- fix(auth): keep credentials out of the log, even on the debug level (#5782 - @JakobLichterfeld)
+- feat(web): skip the modal animation when the system asks for reduced motion, with own fade and scale CSS (#5784 - @JakobLichterfeld)
+- fix(geocoder): fill the address fields by Nominatim's address ranks (#5785 - @JakobLichterfeld)
+- legal: declare copyright and license of every file in REUSE.toml and check REUSE compliance in CI (#5789 - @JakobLichterfeld)
+- legal: add the MIT notice to NOTICE for earlier contributions the relicensing does not cover (#5789 - @JakobLichterfeld)
+- style: spell the name as TeslaMate throughout, including the creator of GPX exports (#5798 - @JakobLichterfeld)
+- fix(docker): start with a PostgreSQL that is reachable only through its Unix socket (#5800 - @JakobLichterfeld)
 
 #### Build, CI, internal
 
@@ -78,14 +148,57 @@ Upgrading directly from 4.1.x no longer preserves entity registry customizations
 - test(characterization): pin the reconnecting stream controls and the missing stream after a service visit (#5743 - @JakobLichterfeld)
 - test(vehicle): make the store-position interval configurable and lock the state-machine field lifecycle with regression tests (#5259 - @JakobLichterfeld)
 - refactor: move the Elixir application to `elixir/`, so the repository root is prepared for the Rust core next to it; tooling, CI and docs point at the new path (#5745 - @JakobLichterfeld)
+- chore(ci): fix the shellcheck and untrusted-input findings from actionlint (#5759 - @JakobLichterfeld)
+- fix(ci): apply the OCI labels to the Grafana images (#5761 - @JakobLichterfeld)
+- fix(ci): pass the build action inputs through env and expressions (#5762 - @JakobLichterfeld)
+- build(deps): bump react and react-dom from 19.2.8 to 19.3.0 in /website (#5751)
+- build(deps): bump nanoid from 3.3.16 to 3.3.19 in /website (5760)
+- build(deps): bump the actions-deps group across 4 directories with 7 updates (#5758)
+- build(deps): bump elixir from 1.20.2-otp-29 to 1.20.3-otp-29 (#5747)
+- build(deps-dev): bump sass from 1.103.1 to 1.104.1 in /elixir/assets (#5749)
+- build(deps): bump @geoman-io/leaflet-geoman-free from 2.20.0 to 2.20.1 in /elixir/assets (5750)
+- build(deps-dev): bump phoenix_live_reload from 1.6.2 to 1.7.0 in /elixir (#5753)
+- build(deps-dev): bump credo from 1.7.18 to 1.7.19 in /elixir (#5755)
+- build(deps): bump ecto_sql from 3.13.5 to 3.14.0 in /elixir (#5757)
+- build(deps): update flake.lock (#5728)
+- feat(rust): add the Rust core skeleton under rust/ — crate, CI with path routing, Nix package and devenv toolchain (#5703 - @brianmay, @JakobLichterfeld)
+- build(rust): choose Tokio as the async runtime (#5772 - @brianmay)
+- build(deps): bump tzdata from 1.1.4 to 1.2.1 in /elixir (#5771)
+- build(deps): remove unused hackney lock entries after tzdata 1.2.1 (#5771 - @JakobLichterfeld)
+- build(deps): bump tesla from 1.20.0 to 1.21.3 in /elixir (#5767)
+- build(deps): bump phoenix_live_view from 1.2.11 to 1.2.12 in /elixir (#5768)
+- build(deps-dev): bump dialyxir from 1.4.7 to 1.4.8 in /elixir (#5769)
+- build(deps): bump tortoise311 from 0.12.2 to 0.12.3 in /elixir (#5770)
+- fix(test): restart cars_id_seq at suite start so smallint cars.id never overflows across local runs (#5773 - @JakobLichterfeld)
+- build: ship NOTICE and LICENSE in both images and both Nix packages, and declare AGPL-3.0-or-later in the Nix metadata (#5778 - @JakobLichterfeld)
+- build(deps): bump image-size from 2.0.2 to 2.0.4 in /website (#5783)
+- test(geocoder): pin which address label fills which field, and in which order (#5785 - @JakobLichterfeld)
+- test(geocoder): pin the address fields of 19 recorded Nominatim addresses (#5785 - @JakobLichterfeld)
+- build: stop building the Grafana image for ARMv7, which is no longer supported (#5788 - @JakobLichterfeld)
+- build(deps): update flake.lock (#5790)
+- feat(rust): read the configuration from environment variables and take the version from the VERSION file (#5776 - @brianmay, @JakobLichterfeld)
+- fix(nix): trim the VERSION file for the Elixir package, so a trailing newline no longer ends up in its name (#5776 - @JakobLichterfeld)
+- fix(test): mask TeslaMate's version in the discovery goldens, so a release no longer breaks the characterization tests (#5802 - @JakobLichterfeld)
 
 #### Dashboards
 
+- feat(grafana): add `total` period to the Statistics dashboard for one aggregated row over the selected time range (#5680 - @micku7zu)
+- fix(grafana): count asleep/offline states that cross a parking boundary in the vampire drain standby time (#5729 - @rewse)
+- fix(grafana): fall back to the neighbourhood where an address has no city (#5785 - @JakobLichterfeld)
+- feat(grafana): add a new dashboard showing historical temperatures (#5457 - @slayer01)
+
 #### Translations
+
+- fix(i18n): translate the import page, the car summary, the car order setting and the validation errors into German (#5786 - @JakobLichterfeld)
 
 #### Documentation
 
 - docs: add AI-assisted contribution policy and Grafana dashboard notes (#5578 - @swiffer)
+- docs(faq): explain how to add a car that shows up in the Tesla account after start-up and reorder the entries (#5766 - @JakobLichterfeld)
+- docs: declare MQTT the only supported integration surface; database and web routes are internal (#5775 - @JakobLichterfeld)
+- docs: list the web interface languages with their English fallback, and show the Trendshift ranking under Popularity (#5780 - @JakobLichterfeld)
+- docs: state that the image SBOM lists only the Debian packages and the Erlang and Elixir runtime, and why (#5787 - @JakobLichterfeld)
+- docs: remove the outdated entity relationship model from the development docs (#5801 - @JakobLichterfeld)
 
 ## [4.2.0] - 2026-08-23
 
@@ -3181,7 +3294,8 @@ New users need to sign in via the web interface.
 
 ## [1.0.0] - 2019-07-25
 
-[unreleased]: https://github.com/teslamate-org/teslamate/compare/v4.2.0...HEAD
+[unreleased]: https://github.com/teslamate-org/teslamate/compare/v4.3.0...HEAD
+[4.3.0]: https://github.com/teslamate-org/teslamate/compare/v4.2.0...v4.3.0
 [4.2.0]: https://github.com/teslamate-org/teslamate/compare/v4.1.1...v4.2.0
 [4.1.1]: https://github.com/teslamate-org/teslamate/compare/v4.1.0...v4.1.1
 [4.1.0]: https://github.com/teslamate-org/teslamate/compare/v4.0.1...v4.1.0

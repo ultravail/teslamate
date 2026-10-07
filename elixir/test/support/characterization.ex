@@ -184,7 +184,10 @@ defmodule TeslaMate.Characterization do
   (`HomeAssistant.device/2`, `Vehicle.format_model/1`), software version and
   the entity block. The car id is masked in payloads as in topics
   (`mask_car_id/2`): state topics, unique ids, the device identifier and the
-  fallback device name carry it.
+  fallback device name carry it. The origin's `sw_version`, TeslaMate's own
+  version, is pinned as `"$teslamate_version"` (`mask_version/1`), since
+  every release changes it. The version to mask is read from
+  `TeslaMate.Version.version/0` at replay time, so it cannot go stale.
 
   `seed.positions` (optional) inserts position rows for the car before the
   vehicle starts, through the production `Log.insert_position/2` — the
@@ -1414,7 +1417,10 @@ defmodule TeslaMate.Characterization do
         # discovery payload names state topics, unique ids, the device
         # identifier and the fallback device name by the id.
         topic = mask_car_id(topic, car)
-        payload = payload |> to_string() |> mask_car_id(car) |> canonical_payload()
+
+        payload =
+          payload |> to_string() |> mask_car_id(car) |> canonical_payload() |> mask_version()
+
         acc = Map.update(acc, topic, [payload], &[payload | &1])
         drain_mqtt(acc, car)
     after
@@ -1432,6 +1438,20 @@ defmodule TeslaMate.Characterization do
     |> String.replace(~r"teslamate_#{id}(?!\d)", "teslamate_$car")
     |> String.replace(~r"Tesla ##{id}(?!\d)", "Tesla #$car")
   end
+
+  # The discovery origin carries TeslaMate's own version, which every release
+  # changes. Only the version this build was compiled with is masked, so a
+  # different one still diverges. Read it at replay time: a copy compiled into
+  # this module goes stale when VERSION changes and this file does not.
+  defp mask_version(%{"origin" => %{"sw_version" => version} = origin} = payload) do
+    if version == TeslaMate.Version.version() do
+      %{payload | "origin" => %{origin | "sw_version" => "$teslamate_version"}}
+    else
+      payload
+    end
+  end
+
+  defp mask_version(payload), do: payload
 
   # `mqtt.discovery` switches Home Assistant discovery on for the replay.
   defp discovery?(input) do

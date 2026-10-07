@@ -18,7 +18,9 @@ defmodule TeslaMate.MixProject do
       releases: releases(),
       deps: deps(),
       dialyzer: dialyzer(),
-      test_coverage: [tool: ExCoveralls]
+      test_coverage: [tool: ExCoveralls],
+      # License metadata only; nothing is published to Hex.
+      package: [licenses: ["AGPL-3.0-or-later"]]
     ]
   end
 
@@ -119,7 +121,7 @@ defmodule TeslaMate.MixProject do
   end
 
   defp version do
-    case File.read("../VERSION") do
+    case File.read(Path.expand("../VERSION", __DIR__)) do
       {:ok, version} -> String.trim(version)
       {:error, _reason} -> "0.0.0"
     end

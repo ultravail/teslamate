@@ -24,6 +24,16 @@ updates:
     cooldown:
       default-days: 7
 
+  - package-ecosystem: "cargo"
+    directory: "/rust"
+    schedule:
+      interval: "monthly"
+    groups:
+      opentelemetry-rust:
+        patterns:
+          - "opentelemetry*"
+          - "tracing-opentelemetry"
+
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
