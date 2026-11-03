@@ -6,6 +6,74 @@
 
 ### Improvements and bug fixes
 
+- fix(vehicle): keep showing the car's name while it is asleep, for cars whose name Tesla only reports while awake (#5917 - @JakobLichterfeld)
+- feat: use Grafana 13.3.0 (#5918 - @swiffer)
+- fix(vehicle): wait as long as Tesla asks after too many requests, also while driving (#5924 - @JakobLichterfeld)
+- fix(settings): no longer crash when changing the address language with many stored addresses (#5926 - @JakobLichterfeld)
+- fix(settings): show an error if refreshing the addresses fails, instead of crashing the page (#5926 - @JakobLichterfeld)
+- fix(settings): no longer show an old address refresh error after changing the language again (#5926 - @JakobLichterfeld)
+- fix(settings): changing the address language in two tabs at once leaves all addresses in the language chosen last (#5926 - @JakobLichterfeld)
+- fix(settings): show settings changed during an address refresh as saved (#5926 - @JakobLichterfeld)
+- fix(settings): changing other settings no longer shows the address refresh spinner (#5926 - @JakobLichterfeld)
+- fix(settings): pause before the first reverse geocoding too, as Nominatim's usage policy asks (#5926 - @JakobLichterfeld)
+- fix(vehicle): no longer hold a database connection while looking up the address at charging start (#5929 - @JakobLichterfeld)
+- fix(vehicle): no longer hold a database connection while looking up the addresses at the end of a drive (#5929 - @JakobLichterfeld)
+- fix(locations): space all requests to Nominatim for the whole app, as its usage policy asks (#5929 - @JakobLichterfeld)
+- fix(vehicle): record the elevation and the full ascent and descent of drives during which the stream stopped sending positions (#5940 - @JakobLichterfeld)
+- fix(terrain): add the missing elevation to every drive once it has ended, also to a drive closed by hand long after and, once after an import, to the imported drives, and update their ascent and descent (#5940 - @JakobLichterfeld)
+- fix(vehicle): no longer hold a database connection while looking up the terrain elevation, and no longer crash when that lookup is slow or not yet available (#5940 - @JakobLichterfeld)
+
+#### Build, CI, internal
+
+- sec(deps): add tinypool override to version 2.1.2 in /website (#5896 - @JakobLichterfeld)
+- sec(deps): add postcss-selector-parser override to version 7.1.6 in /website (#5897 - @JakobLichterfeld)
+- sec(deps): update qs to version 6.16.1 in /website (#5899 - @JakobLichterfeld)
+- sec(deps): update rustls to version 0.23.46 in /rust (#5900 - @JakobLichterfeld)
+- sec(deps): update webpack-dev-middleware to version 7.4.6 in /website (#5901 - @JakobLichterfeld)
+- fix(test): group the canonical_call clauses so the characterization harness compiles with warnings as errors (#5898 - @swiffer)
+- ci(elixir): compile the test env with warnings as errors so warnings in test/support fail the Elixir Test job (#5913 - @JakobLichterfeld)
+- build(deps): update flake.lock (#5904)
+- build(deps): bump fast-uri from 3.1.8 to 3.1.9 in /website (#5914)
+- build(deps): bump body-parser from 1.20.8 to 1.20.9 in /website (#5915)
+- test(settings): cover reverse geocoding, mismatches, failures and parallel language changes of the address refresh, without sleeping (#5926 - @JakobLichterfeld)
+- test(settings): wait for the update check instead of sleeping a second (#5926 - @JakobLichterfeld)
+- test(updater): wait for the update check before asserting its outcome (#5926 - @JakobLichterfeld)
+- test(locations): fail every test that geocodes while holding a database connection (#5929 - @JakobLichterfeld)
+- test(repair): cover the pacing of the address repair, without sleeping (#5929 - @JakobLichterfeld)
+- build(elixir): run mix ci in the test env with the same checks as CI, warnings as errors and the gettext check included (#5929 - @JakobLichterfeld)
+- test(vehicle): pin the elevation, ascent and descent of a drive whose stream stops sending positions in a characterization scenario (#5940 - @JakobLichterfeld)
+- test(vehicle): hold API events in the vehicle tests through one helper (#5940 - @JakobLichterfeld)
+- test(characterization): replay the Terrain repair end to end, also for a drive closed by hand long after a crash (#5940 - @JakobLichterfeld)
+
+#### Dashboards
+
+- perf(grafana): draw the Charge Level moving percentiles several times faster (#5930 - @Dulanic)
+- fix(grafana): the current usable capacity in Battery Health averages your last 10 charges instead of jumping with each one (#5943 - @Vihvila92)
+
+#### Translations
+
+#### Documentation
+
+- docs(development): list the gettext check and warnings as errors among the checks mix ci runs (#5929 - @JakobLichterfeld)
+
+## [4.4.0] - 2026-10-23
+
+The certificate authority eMudhra generated the private keys of eight of its intermediate CAs incorrectly, so anyone can recover them from the certificates ([incident report](https://bugzilla.mozilla.org/show_bug.cgi?id=2083449)). TeslaMate no longer trusts these CAs, so they cannot be used to impersonate the Tesla streaming API or your MQTT broker (#5882).
+The Docker image now ships the CA certificates, so time zone updates download again (#5808), and we use the latest Grafana (13.2.4) with its security fixes.
+
+While driving, the car summary and MQTT now show the newest value of stream and poll, so values such as the odometer no longer step back and Home Assistant no longer logs "state is not strictly increasing".
+The Visited dashboard lists the countries and cities each car stopped or charged in, with a day-by-day view per city, and the Temperatures dashboard shows averages over the selected range instead of empty tiles. The charging dashboards label the charger values as AC input and hide them during DC fast charging, and the SuC Charging Cost panel classifies each session by all of its charges, not only the last one.
+Creating, changing or deleting a geofence now re-assigns drives and charges by their actual distance from it, and changing only a geofence's name or costs no longer re-assigns them at all, so saving no longer times out on large databases.
+Maps appear sooner and on phones the footer stays clear of the system gesture area.
+
+**Note for MQTT users:** A value the car reports as missing is now published as an empty [MQTT topic](https://docs.teslamate.org/docs/integrations/mqtt#mqtt-topics), e.g. `speed` and `shift_state` once the car is switched off; before, the last value stayed. The car summary in the web UI shows it empty as well. A topic the car has not reported since TeslaMate started is no longer cleared, so its retained value stays. While TeslaMate runs, the `odometer` never decreases and is never published empty.
+
+To make your TeslaMate experience even better, we have made 68 improvements.
+
+Enjoy!
+
+### Improvements and bug fixes
+
 - feat: use Grafana 13.2.3 (#5803 - @swiffer)
 - fix(docker): install the CA certificates, so Tzdata can verify TLS and download time zone updates (#5808 - @JakobLichterfeld)
 - fix: use the position's latitude when re-assigning drives and charges to geofences (#5820 - @JakobLichterfeld)
@@ -13,6 +81,9 @@
 - perf(web): connect to the map tile server early, so maps appear sooner (#5826 - @JakobLichterfeld)
 - fix(web): label cars without a name by their VIN in the settings, like the car summary (#5821 - @TUNER88)
 - fix(web): label cars without a name by their VIN on the charge cost page and in the vehicle reload hint, like the car summary (#5827 - @JakobLichterfeld)
+- fix(vehicle): show the newest value of stream and poll in the car summary and on MQTT, so values such as the odometer no longer step back while driving (#5864 - @JakobLichterfeld)
+- feat: use Grafana 13.2.4 (#5883 - @JakobLichterfeld)
+- fix(web): keep the footer out of the phone's system gesture area and stop the page from scrolling past the screen on phones (#5884 - @JakobLichterfeld)
 
 #### Build, CI, internal
 
@@ -39,12 +110,50 @@
 - style(rust): fix the formatting ([057270c1](https://github.com/teslamate-org/teslamate/commit/057270c1938e0714164b77004ecb6e349436915a) - @brianmay)
 - build(deps): bump the opentelemetry-rust group across 1 directory with 6 updates (#5833)
 - refactor(rust): configure the OTLP export only through the standard OpenTelemetry environment variables, export each signal only when its endpoint is set, and drop the unused dependencies (#5835 - @JakobLichterfeld)
+- fix(db): align import_runs.car_id type with cars.id (smallint) (#5847 - @JakobLichterfeld)
+- refactor(db): rename the range enum to preferred_range (#5860 - @JakobLichterfeld)
+- build(deps): bump finch from 0.23.0 to 0.24.0 in /elixir (#5832)
+- build(deps): bump anchore/sbom-action from 0.24.2 to 0.24.3 in /.github/actions/build in the actions-deps group across 1 directory (#5834)
+- build(deps): bump tokio from 1.53.1 to 1.53.3 in /rust (#5836)
+- build(deps-dev): bump sass from 1.105.0 to 1.105.1 in /elixir/assets (#5837)
+- build(deps): bump source-map-js from 1.2.1 to 1.2.2 in /elixir/assets (#5838)
+- build(deps): bump proxy-addr from 2.0.7 to 2.0.8 in /website (#5839)
+- build(deps): bump source-map-js from 1.2.1 to 1.2.2 in /website (#5840)
+- build(deps): bump compression from 1.8.1 to 1.8.2 in /website (#5841)
+- build(deps): bump shell-quote from 1.10.0 to 1.12.0 in /website (#5842)
+- build(deps): bump joi from 17.13.7 to 17.13.8 in /website (#5843)
+- build(nix): drop x86_64-darwin, which devenv's nixpkgs no longer supports (#5879 - @JakobLichterfeld)
+- build(deps): update flake.lock (#5850)
+- build(nix): regenerate treefmt.toml for the updated treefmt-nix (#5850 - @JakobLichterfeld)
+- build(deps): bump follow-redirects from 1.16.0 to 1.16.1 in /website (#5876)
+- build(deps): bump launch-editor from 2.14.1 to 2.14.2 in /website (#5878)
+- build(deps): distrust the compromised eMudhra intermediate CAs (#5882 - @marsavela)
+- fix: update the gettext POT file for the moved layout lines ([06149aab](https://github.com/teslamate-org/teslamate/commit/06149aab33354102eeb53259176c3a01da99ad86) - @JakobLichterfeld)
+- fix: update the PO file references for the moved layout lines ([68ca04be](https://github.com/teslamate-org/teslamate/commit/68ca04be658aeda4288a205e26bdf6a2f31f23b3) - @JakobLichterfeld)
+- ci(typos): skip GitHub handles in Markdown, so contributor names never fail the spell check ([fbf78c1c](https://github.com/teslamate-org/teslamate/commit/fbf78c1c5e17cb219019a58d2d29afa3c7ae7e07) - @JakobLichterfeld)
+- build(deps): bump react and react-dom from 19.3.0 to 19.3.1 in /website (#5887)
+- build(deps): bump the actions-deps group across 3 directories with 6 updates (#5894)
+- build(deps): bump phoenix_live_view from 1.2.12 to 1.2.13 in /elixir (#5888)
+- build(deps): bump tesla from 1.21.3 to 1.22.0 in /elixir (#5890)
+- build(deps-dev): bump sass from 1.105.1 to 1.105.2 in /elixir/assets (#5889)
+- build(deps): bump the opentelemetry-rust group in /rust with 5 updates (#5892)
 
 #### Dashboards
 
+- feat(grafana): list the countries and cities each car stopped or charged in on the Visited dashboard, with a day-by-day view per city (#5859 - @jheredianet)
+- feat(grafana): replace the Temperatures dashboard's empty last-value tiles with averages over the selected range (#5858 - @jheredianet)
+- fix(grafana): classify sessions in the Charging Stats SuC Charging Cost panel by all their charges, not the last one (#5885 - @JakobLichterfeld)
+- fix(grafana): label charger values as AC input and hide them during DC fast charging (#5866 - @SomSamantray, @JakobLichterfeld)
+
 #### Translations
 
+- i18n(it): complete Italian web UI translations (#5875 - @SiNaPsEr0x)
+
 #### Documentation
+
+- docs(mqtt): describe the Home Assistant discovery cleanup on every start while discovery is disabled (#5845 - @JakobLichterfeld)
+- docs(home-assistant): use the binary_sensor domain for the parking brake entity id (#5861 - @Bascht74)
+- docs(install): require Elixir 1.19+ on Erlang/OTP 28+ in the manual install guides, install it with mise on Debian (#5877 - @JakobLichterfeld)
 
 ## [4.3.0] - 2026-09-29
 
@@ -3294,7 +3403,8 @@ New users need to sign in via the web interface.
 
 ## [1.0.0] - 2019-07-25
 
-[unreleased]: https://github.com/teslamate-org/teslamate/compare/v4.3.0...HEAD
+[unreleased]: https://github.com/teslamate-org/teslamate/compare/v4.4.0...HEAD
+[4.4.0]: https://github.com/teslamate-org/teslamate/compare/v4.3.0...v4.4.0
 [4.3.0]: https://github.com/teslamate-org/teslamate/compare/v4.2.0...v4.3.0
 [4.2.0]: https://github.com/teslamate-org/teslamate/compare/v4.1.1...v4.2.0
 [4.1.1]: https://github.com/teslamate-org/teslamate/compare/v4.1.0...v4.1.1
